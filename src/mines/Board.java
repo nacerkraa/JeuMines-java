@@ -1,6 +1,7 @@
 package mines;
 
 import java.awt.Graphics;
+
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,29 +15,29 @@ import javax.swing.JPanel;
 public class Board extends JPanel {
 	private static final long serialVersionUID = 6195235521361212179L;
 	
-	private final int NUM_IMAGES = 13;
-    private final int CELL_SIZE = 15;
+	private static final int NUM_IMAGES = 13;
+    private static final int CELL_SIZE = 15;
 
-    private final int COVER_FOR_CELL = 10;
-    private final int MARK_FOR_CELL = 10;
-    private final int EMPTY_CELL = 0;
-    private final int MINE_CELL = 9;
-    private final int COVERED_MINE_CELL = MINE_CELL + COVER_FOR_CELL;
-    private final int MARKED_MINE_CELL = COVERED_MINE_CELL + MARK_FOR_CELL;
+    private static final int COVER_FOR_CELL = 10;
+    private static final int MARK_FOR_CELL = 10;
+    private static final int EMPTY_CELL = 0;
+    private static final int MINE_CELL = 9;
+    private static final int COVERED_MINE_CELL = MINE_CELL + COVER_FOR_CELL;
+    private static final int MARKED_MINE_CELL = COVERED_MINE_CELL + MARK_FOR_CELL;
 
-    private final int DRAW_MINE = 9;
-    private final int DRAW_COVER = 10;
-    private final int DRAW_MARK = 11;
-    private final int DRAW_WRONG_MARK = 12;
+    private static final int DRAW_MINE = 9;
+    private static final int DRAW_COVER = 10;
+    private static final int DRAW_MARK = 11;
+    private static final int DRAW_WRONG_MARK = 12;
 
     private int[] field;
     private boolean inGame;
-    private int mines_left;
+    private int minesLeft;
     private Image[] img;
     private int mines = 40;
     private int rows = 16;
     private int cols = 16;
-    private int all_cells;
+    private int allCells;
     private JLabel statusbar;
 
 
@@ -58,79 +59,72 @@ public class Board extends JPanel {
         newGame();
     }
 
+    Random random = new Random();
 
     public void newGame() {
 
-        Random random;
-        int current_col;
+        int currentCol;
 
         int i = 0;
         int position = 0;
         int cell = 0;
 
-        random = new Random();
-        inGame = true;
-        mines_left = mines;
-
-        all_cells = rows * cols;
-        field = new int[all_cells];
         
-        for (i = 0; i < all_cells; i++)
+        inGame = true;
+        minesLeft = mines;
+
+        allCells = rows * cols;
+        field = new int[allCells];
+        
+        for (i = 0; i < allCells; i++)
             field[i] = COVER_FOR_CELL;
 
-        statusbar.setText(Integer.toString(mines_left));
+        statusbar.setText(Integer.toString(minesLeft));
 
 
         i = 0;
         while (i < mines) {
 
-            position = (int) (all_cells * random.nextDouble());
+            position = ( random.nextInt(allCells));
 
-            if ((position < all_cells) &&
+            if ((position < allCells) &&
                 (field[position] != COVERED_MINE_CELL)) {
-
-
-                current_col = position % cols;
+                currentCol = position % cols;
                 field[position] = COVERED_MINE_CELL;
                 i++;
 
-                if (current_col > 0) { 
+                if (currentCol > 0) { 
                     cell = position - 1 - cols;
-                    if (cell >= 0)
-                        if (field[cell] != COVERED_MINE_CELL)
-                            field[cell] += 1;
-                    cell = position - 1;
-                    if (cell >= 0)
-                        if (field[cell] != COVERED_MINE_CELL)
+                    
+                    if (cell >= 0 && field[cell] != COVERED_MINE_CELL) {
+	                    field[cell] += 1;
+	                    cell = position - 1;
+                    }
+                    
+                    if (cell >= 0 && (field[cell] != COVERED_MINE_CELL))
                             field[cell] += 1;
 
                     cell = position + cols - 1;
-                    if (cell < all_cells)
-                        if (field[cell] != COVERED_MINE_CELL)
+                    if (cell < allCells && (field[cell] != COVERED_MINE_CELL))
                             field[cell] += 1;
                 }
 
                 cell = position - cols;
-                if (cell >= 0)
-                    if (field[cell] != COVERED_MINE_CELL)
+                if (cell >= 0 && (field[cell] != COVERED_MINE_CELL))
                         field[cell] += 1;
                 cell = position + cols;
-                if (cell < all_cells)
-                    if (field[cell] != COVERED_MINE_CELL)
+                if (cell < allCells && (field[cell] != COVERED_MINE_CELL))
                         field[cell] += 1;
 
-                if (current_col < (cols - 1)) {
+                if (currentCol < (cols - 1)) {
                     cell = position - cols + 1;
-                    if (cell >= 0)
-                        if (field[cell] != COVERED_MINE_CELL)
+                    if (cell >= 0 && (field[cell] != COVERED_MINE_CELL))
                             field[cell] += 1;
                     cell = position + cols + 1;
-                    if (cell < all_cells)
-                        if (field[cell] != COVERED_MINE_CELL)
+                    if (cell < allCells && (field[cell] != COVERED_MINE_CELL))
                             field[cell] += 1;
                     cell = position + 1;
-                    if (cell < all_cells)
-                        if (field[cell] != COVERED_MINE_CELL)
+                    if (cell < allCells && (field[cell] != COVERED_MINE_CELL))
                             field[cell] += 1;
                 }
             }
@@ -161,7 +155,7 @@ public class Board extends JPanel {
                 }
 
             cell = j + cols - 1;
-            if (cell < all_cells)
+            if (cell < allCells)
                 if (field[cell] > MINE_CELL) {
                     field[cell] -= COVER_FOR_CELL;
                     if (field[cell] == EMPTY_CELL)
@@ -178,7 +172,7 @@ public class Board extends JPanel {
             }
 
         cell = j + cols;
-        if (cell < all_cells)
+        if (cell < allCells)
             if (field[cell] > MINE_CELL) {
                 field[cell] -= COVER_FOR_CELL;
                 if (field[cell] == EMPTY_CELL)
@@ -195,7 +189,7 @@ public class Board extends JPanel {
                 }
 
             cell = j + cols + 1;
-            if (cell < all_cells)
+            if (cell < allCells)
                 if (field[cell] > MINE_CELL) {
                     field[cell] -= COVER_FOR_CELL;
                     if (field[cell] == EMPTY_CELL)
@@ -203,7 +197,7 @@ public class Board extends JPanel {
                 }
 
             cell = j + 1;
-            if (cell < all_cells)
+            if (cell < allCells)
                 if (field[cell] > MINE_CELL) {
                     field[cell] -= COVER_FOR_CELL;
                     if (field[cell] == EMPTY_CELL)
@@ -263,6 +257,7 @@ public class Board extends JPanel {
 
 
     class MinesAdapter extends MouseAdapter {
+    	
         public void mousePressed(MouseEvent e) {
 
             int x = e.getX();
@@ -288,17 +283,17 @@ public class Board extends JPanel {
                         rep = true;
 
                         if (field[(cRow * cols) + cCol] <= COVERED_MINE_CELL) {
-                            if (mines_left > 0) {
+                            if (minesLeft > 0) {
                                 field[(cRow * cols) + cCol] += MARK_FOR_CELL;
-                                mines_left--;
-                                statusbar.setText(Integer.toString(mines_left));
+                                minesLeft--;
+                                statusbar.setText(Integer.toString(minesLeft));
                             } else
                                 statusbar.setText("No marks left");
                         } else {
 
                             field[(cRow * cols) + cCol] -= MARK_FOR_CELL;
-                            mines_left++;
-                            statusbar.setText(Integer.toString(mines_left));
+                            minesLeft++;
+                            statusbar.setText(Integer.toString(minesLeft));
                         }
                     }
 
