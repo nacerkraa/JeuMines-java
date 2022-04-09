@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Mines",
+            "request": "launch",
+            "mainClass": "mines.Mines",
+            "projectName": "Demo11"
+        }
+    ]
+}
